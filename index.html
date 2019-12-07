@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>My first three.js app</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="js/three.min.js"></script>
+    <script src="js/dat.gui.js"></script>
+
+    <script>
+        var sampleText = function () {
+            this.xRotation = 0.3;
+            this.yRotation = 18.9;
+            this.zRotation = 0;
+            this.zoom = 75;
+
+        };
+
+
+
+        document.onkeydown = checkKey;
+
+        function checkKey(e) {
+
+            e = e || window.event;
+
+            // if (e.keyCode == '38') {
+            //     // up arrow
+            //     xRotation -= 0.1;
+            //     floor.rotation.x -= 0.1;
+            // }
+            // else if (e.keyCode == '40') {
+            //     // down arrow
+            //     xRotation += 0.1;
+            //     floor.rotation.x += 0.1;
+            // }
+
+
+
+            if (e.keyCode == '37') {
+                // left arrow
+                yRotation < 18.69 ? null : yRotation -= 0.1;
+
+                floor.rotation.y < -0.2 ? null : floor.rotation.y -= 0.1;
+
+
+
+
+            }
+            else if (e.keyCode == '39') {
+
+
+
+                yRotation > 19.2 ? null : yRotation += 0.1;
+
+                floor.rotation.y > 0.3 ? null : floor.rotation.y += 0.1;
+
+
+
+
+            }
+
+            else if (e.keyCode == '187' || e.keyCode == '107') {
+                // right arrow
+                zoom -= 1;
+            }
+            else if (e.keyCode == '189' || e.keyCode == '109') {
+                // right arrow
+                zoom += 1;
+            }
+
+        }
+
+
+
+
+
+
+        window.onload = function () {
+            text = new sampleText();
+            setValue();
+            // var gui = new dat.GUI();
+            // gui.add(text, 'xRotation', 0, 15).onChange(setValue);
+            // gui.add(text, 'yRotation', 0, 15).onChange(setValue);
+            // gui.add(text, 'zRotation', 0, 15).onChange(setValue);
+            // gui.add(text, 'zoom', 35, 150).onChange(setValue);
+            // gui.add(text, 'reset_rotation');
+        };
+
+        function setValue() {
+            xRotation = text.xRotation;
+            yRotation = text.yRotation;
+            zRotation = text.zRotation;
+            zoom = text.zoom;
+        }
+
+        var SPEED = 0.01;
+        var mesh = "";
+
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 10000);
+        var renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+        document.body.appendChild(renderer.domElement);
+
+        // (color, intensity)
+        var light = new THREE.AmbientLight(0xffffff, 1);
+        // (x, y, z)
+        scene.add(light);
+
+
+        // add  new mesh
+
+        var geometry = new THREE.PlaneGeometry(10, 1000, 1, 1);
+        var material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
+        var floor = new THREE.Mesh(geometry, material);
+        floor.material.side = THREE.DoubleSide;
+        floor.rotation.x = 360.1;
+        scene.add(floor);
+
+
+
+
+
+
+
+        // Load the object 
+        var loader = new THREE.JSONLoader();
+
+        loader.load("js/camaro.js", function (geometry, materials) {
+            var material = new THREE.MeshBasicMaterial({ color: 0xffffff, map: THREE.ImageUtils.loadTexture('png/camaro8.png') });
+
+            mesh = new THREE.Mesh(geometry, material);
+            scene.add(mesh);
+
+            //Sets Inital xRot 
+            mesh.rotation.x = .35;
+        });
+
+        // move the camera back
+        camera.position.z = 6;
+
+        function rotateMesh() {
+            if (!mesh) {
+                return;
+            }
+
+            mesh.rotation.x = xRotation;
+            mesh.rotation.y = yRotation;
+            mesh.rotation.z = zRotation;
+            camera.fov = zoom;
+            camera.updateProjectionMatrix();
+        }
+
+        function render() {
+            requestAnimationFrame(render);
+            rotateMesh();
+            renderer.render(scene, camera);
+        }
+        render();
+
+        //Stats
+        var stats = new Stats();
+        stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild(stats.dom);
+
+        function animate() {
+            stats.begin();
+            // monitored code goes here
+            stats.end();
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    </script>
+</body>
+
+</html>
